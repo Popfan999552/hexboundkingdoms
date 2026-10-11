@@ -40,6 +40,7 @@ for attempt in {1..60}; do
  sleep 2
 done
 [[ "$ready" == true ]] || { echo 'Android gameplay did not report a successful roll and mounted board.' >&2; exit 1; }
+if [[ "${HEXBOUND_TEST_ADS:-0}" == 1 ]]; then rg -q 'native_ads=true' build/emulator-qa/logcat.txt || { echo 'Native ad plugin failed to register at runtime.' >&2; exit 1; }; fi
 app_pid=$("$adb" shell pidof com.hexboundkingdoms.game | tr -d '\r')
 test -n "$app_pid"
 "$adb" logcat -d --pid "$app_pid" > build/emulator-qa/app-logcat.txt

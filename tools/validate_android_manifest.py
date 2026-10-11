@@ -23,7 +23,7 @@ def main(bundle):
  if application.get(ANDROID+'debuggable','false')!='false': raise SystemExit('Release app must not be debuggable')
  permissions=sorted(p.get(ANDROID+'name') for p in root.findall('uses-permission'))
  ads=os.environ.get('HEXBOUND_TEST_ADS')=='1'
- allowed={'android.permission.INTERNET','android.permission.ACCESS_NETWORK_STATE','android.permission.AD_ID','com.google.android.gms.permission.AD_ID','android.permission.ACCESS_ADSERVICES_AD_ID','android.permission.ACCESS_ADSERVICES_ATTRIBUTION','android.permission.ACCESS_ADSERVICES_TOPICS'} if ads else set()
+ allowed={'android.permission.INTERNET','android.permission.ACCESS_NETWORK_STATE','android.permission.AD_ID','com.google.android.gms.permission.AD_ID','android.permission.ACCESS_ADSERVICES_AD_ID','android.permission.ACCESS_ADSERVICES_ATTRIBUTION','android.permission.ACCESS_ADSERVICES_TOPICS','android.permission.WAKE_LOCK','android.permission.FOREGROUND_SERVICE'} if ads else set()
  metadata={m.get(ANDROID+'name'):m.get(ANDROID+'value') for m in application.findall('meta-data')}
  native_plugins=['org.godotengine.plugin.v2.PoingGodotAdMob','org.godotengine.plugin.v2.PoingGodotAdMobConsentInformation','org.godotengine.plugin.v2.PoingGodotAdMobUserMessagingPlatform']
  if ads:
@@ -31,6 +31,12 @@ def main(bundle):
   if not all(n in metadata for n in native_plugins): raise SystemExit('Native ads/UMP plugin metadata missing; variant was not actually integrated')
   if metadata.get('com.google.android.gms.ads.APPLICATION_ID')!='ca-app-pub-3940256099942544~3347511713': raise SystemExit('Only authorized Google test app ID is permitted')
  elif any(n in metadata for n in native_plugins): raise SystemExit('Offline build unexpectedly includes native ads')
+ if ads:
+  signature_permission='com.hexboundkingdoms.game.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+  declarations=[p for p in root.findall('permission') if p.get(ANDROID+'name')==signature_permission]
+  if len(declarations)==1 and declarations[0].get(ANDROID+'protectionLevel') in ['signature','0x00000002']:
+   allowed.add(signature_permission)
+  if 'android.permission.READ_BASIC_PHONE_STATE' in permissions: raise SystemExit('Optional phone-state permission must be removed')
  unexpected=set(permissions)-allowed
  if unexpected: raise SystemExit('Unexpected permissions require investigation: '+str(sorted(unexpected)))
  report={'package':root.attrib['package'],'min_sdk':26,'target_sdk':36,'allow_backup':False,'debuggable':False,'permissions':permissions,'test_ads':ads,'native_ad_plugins_present':all(n in metadata for n in native_plugins),'bundletool_validation':'passed','device_validation':'unrun'}

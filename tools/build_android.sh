@@ -37,6 +37,15 @@ with zipfile.ZipFile(base) as archive:
   else: path.parent.mkdir(parents=True,exist_ok=True); path.write_bytes(archive.read(entry))
 (target/'gradlew').chmod(0o755)
 pathlib.Path('android/.build_version').write_text('4.6.3.stable')
+if os.environ.get('HEXBOUND_TEST_ADS')=='1':
+    # Phone/carrier state is optional to advertising and unnecessary to this game.
+    # Supported manifest-merger removal; never alter vendored SDK binaries.
+    import xml.etree.ElementTree as ET
+    android='http://schemas.android.com/apk/res/android'; tools='http://schemas.android.com/tools'
+    ET.register_namespace('android',android); ET.register_namespace('tools',tools)
+    manifest=target/'AndroidManifest.xml'; tree=ET.parse(manifest)
+    ET.SubElement(tree.getroot(),'uses-permission',{'{'+android+'}name':'android.permission.READ_BASIC_PHONE_STATE','{'+tools+'}node':'remove'})
+    tree.write(manifest,encoding='utf-8',xml_declaration=True)
 PY
 output="build/hexbound-unsigned.aab"
 if [[ -n "${GODOT_ANDROID_KEYSTORE_RELEASE_PATH:-}" ]]; then output="build/hexbound-signed.aab"; fi
