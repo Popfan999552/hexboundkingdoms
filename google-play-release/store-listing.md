@@ -1,6 +1,6 @@
 # Store listing draft
 
-App name: **Hexbound Kingdoms** (18 characters)
+App name: **Hexbound Kingdoms** (17 characters)
 
 Short description (under 80 characters):
 > Build roads, trade resources and light beacons in an offline hex strategy game.
