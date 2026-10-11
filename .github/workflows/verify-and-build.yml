@@ -108,6 +108,9 @@ jobs:
           echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=$UPLOAD_KEY_PASSWORD" >> "$GITHUB_ENV"
       - name: Build and verify Android App Bundle
         run: tools/build_android.sh
+      - name: Report concrete build failures
+        if: failure()
+        run: python3 tools/report_ci_failure.py
       - name: Remove ephemeral upload key
         if: always()
         run: rm -f "$RUNNER_TEMP/upload-key.jks"
