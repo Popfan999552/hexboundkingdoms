@@ -1,0 +1,17 @@
+# Signing and repeatable release builds
+
+No real signing key was created, imported, or committed. No Android bundle is locally available yet. The project uses Godot 4.6.3, API 36, minimum API 26, JDK 21, Gradle from the matching Godot source template, and build-tools 36.1.0.
+
+1. Owner must review/accept required SDK license terms and provision a licensed SDK with API 36, build-tools 36.1.0 and platform-tools. Scripts never run `yes | sdkmanager --licenses`, bypass TLS, or change checksums. GitHub-hosted runner images can have preaccepted/provisioned SDK packages; setup verifies installed components and fails rather than accepting terms.
+2. Owner confirms `com.hexboundkingdoms.game` is the intended unique application ID. It becomes difficult to change after first submission.
+3. Generate/manage an upload key securely on trusted infrastructure, with a strong password and encrypted offline backup. Do not send credentials in chat or add them to the repository. Use the same keystore and key-entry password for Godot's single release password field, or adapt secure signing tooling separately.
+4. Configure GitHub repository Actions secrets: `ANDROID_UPLOAD_KEY_BASE64` (base64 of upload keystore), `ANDROID_UPLOAD_KEY_ALIAS`, `ANDROID_UPLOAD_KEY_PASSWORD`. Base64 is encoding, **not encryption**; use only the secret store. Limit repository/workflow write access and review changes before signing.
+5. Dispatch **Validate and build Hexbound Kingdoms**, `sign_release=true`. Keep `test_ads=false` for an offline candidate. Secrets are never available in fork pull-request jobs. Runner key file is created with umask 077 in runner temporary storage, removed even after failure, and never included in artifact paths.
+6. Download `android-bundle-<run number>`. A signed bundle has the `hexbound-signed.aab` filename; verify `build/logs/signature.log` and test output. An unsigned build has `hexbound-unsigned.aab` and is not uploadable. Artifacts expire after 14 days; retain release records securely.
+7. Owner enrolls in Google Play App Signing and signs uploads with the upload key. Do not confuse the upload key with Google's distribution signing key. Do not disclose either private key. Inspect certificate fingerprints and keep recovery records.
+8. Bump version name intentionally and maintain a monotonically increasing version code (workflow run number by default; set `HEXBOUND_VERSION_CODE` locally). Migration to another workflow/counter must preserve monotonicity.
+9. Use bundletool to validate and dump the manifest, generate device APK sets with a properly managed testing key, then verify installation on real ARM64 Android devices. Check 16-KiB devices, permission list, backup behavior, lifecycle, performance, consent (if enabled) and screenshot fidelity.
+
+Local command: `ANDROID_HOME=/licensed/sdk JAVA_HOME=/jdk21 ./tools/build_android.sh`. Signing overrides: `GODOT_ANDROID_KEYSTORE_RELEASE_PATH`, `GODOT_ANDROID_KEYSTORE_RELEASE_USER`, `GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD`. Supply those only through secure runtime configuration. No script uploads to Google Play.
+
+Reproducible here means pinned toolchain/archives, matching export sources, documented commands and recorded version inputs; bit-for-bit identical signed ZIP bundles are **not claimed** (timestamps, signing and dependency resolution may differ). Native SDK dependencies declared by the pinned plugin must be locked/reviewed after a successful Android build.

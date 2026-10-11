@@ -1,0 +1,17 @@
+.godot/
+android/build/
+android/plugins/
+build/
+*.keystore
+*.jks
+*.p12
+.env
+.env.*
+export_credentials.cfg
+*.tmp
+__pycache__/
+google-play-release/*.aab
+google-play-release/*.apk
+addons/admob/android/bin/
+addons/admob/ios/bin/
+override.cfg
