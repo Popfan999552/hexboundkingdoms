@@ -22,7 +22,7 @@ def icon(size,foreground=False,mono=False):
 def font(size): return ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',size)
 def main():
  assets=ROOT/'assets'; release=ROOT/'google-play-release'; assets.mkdir(exist_ok=True); release.mkdir(exist_ok=True)
- icon(512).save(assets/'icon.png'); icon(512).convert('RGB').save(release/'app-icon-512.png')
+ icon(512).save(assets/'icon.png'); icon(512).save(release/'app-icon-512.png')
  icon(432,True).save(assets/'adaptive-foreground.png'); icon(432,mono=True).save(assets/'adaptive-monochrome.png')
  Image.new('RGB',(432,432),BG).save(assets/'adaptive-background.png')
  im=Image.new('RGB',(1024,500),'#07141f'); d=ImageDraw.Draw(im)
