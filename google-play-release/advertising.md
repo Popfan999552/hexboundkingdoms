@@ -20,3 +20,7 @@ These are **unrun**, not passing. Desktop tests validate only fail-closed behavi
 ## Future ad removal
 
 No purchase button or fake entitlement is exposed. Before offering ad removal: add maintained Google Play Billing integration, products, acknowledgement, pending handling, restore/query purchases, refund/revocation handling, verified entitlement storage/backend where appropriate, Play license testers, and disclosure updates. A local boolean alone is not a purchase implementation. Ad-removal should suppress interstitials without automatically hiding user-requested optional rewards unless clearly disclosed.
+
+## Inspected SDK manifest dependencies
+
+The actual integrated native export was generated, then blocked by the strict permission audit: Google SDK/AndroidX added basic-phone-state, WorkManager foreground/wake, and signature-protected receiver permissions. A supported manifest-merger override removes optional `READ_BASIC_PHONE_STATE`; no SDK binaries or signature/checksum verification were modified. Revised native builds must prove ads/UMP metadata, Google test app ID, networking permissions and absence of basic-phone-state. WorkManager services remain with background-task permissions; the custom dynamic receiver permission is allowed only if its declaration is signature-protected. Device traffic and actual foreground-service usage still require review for accurate Play disclosures. The earlier override.cfg-only ad run omitted native libraries and is **not** native integration evidence.

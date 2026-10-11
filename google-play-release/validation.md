@@ -23,3 +23,7 @@ Executed in the Codex cloud machine using Godot 4.6.3. Outputs are not claims ab
 | Signed bundle / native ad runtime / device tests | Unrun, pending signing credentials/native-device access |
 
 The UI suite initially exposed a bank-selector bug and portrait test setup issue; both were corrected and the suite rerun successfully. Earlier default-home cache failures were corrected with writable XDG directories. No failure has been relabeled as a pass. Advertising/purchase/publication readiness is not claimed.
+
+Native integration diagnosis: the first test-ad run passed while omitting native libraries because the editor ignored override.cfg; it is not native SDK evidence. The subsequent integrated SDK AAB passed structural/native-alignment checks but correctly failed the permission audit on unexpected SDK permissions. Optional basic-phone-state access is removed for the revised build; the revised native audit passed in Actions run 38183634200, proving native ads/UMP metadata, Google test app ID and absence of optional phone-state permission. Emulator results are pending. No failed native audit is called a pass.
+
+Developer tool checks: gameplay/UI/smoke now run in isolated test data directories so they cannot overwrite a developer save. Export configuration runs inside the normal editor plugin lifecycle; a missing-SDK probe exited 1 with the expected prerequisite error and no leaked-RID shutdown errors. Final complete native build revalidation of that helper is pending.

@@ -1,14 +1,12 @@
-extends SceneTree
-func _init() -> void:
-	call_deferred("configure")
-func configure() -> void:
+extends RefCounted
+func configure() -> int:
 	var sdk=OS.get_environment("ANDROID_HOME")
 	if sdk.is_empty(): sdk=OS.get_environment("ANDROID_SDK_ROOT")
-	if sdk.is_empty(): push_error("Set ANDROID_HOME to an installed, licensed Android SDK."); quit(1); return
+	if sdk.is_empty(): push_error("Set ANDROID_HOME to an installed, licensed Android SDK."); return 1
 	if not FileAccess.file_exists(sdk.path_join("platforms/android-36/android.jar")):
-		push_error("Android API 36 is missing. Install it only after its license has been accepted by the owner."); quit(1); return
+		push_error("Android API 36 is missing. Install it only after its license has been accepted by the owner."); return 1
 	var editor_settings=EditorInterface.get_editor_settings()
-	if editor_settings==null: push_error("Run configuration with --editor."); quit(1); return
+	if editor_settings==null: push_error("Run configuration with --editor."); return 1
 	editor_settings.set_setting("export/android/android_sdk_path",sdk)
 	var java=OS.get_environment("JAVA_HOME")
 	if not java.is_empty(): editor_settings.set_setting("export/android/java_sdk_path",java)
@@ -25,11 +23,11 @@ func configure() -> void:
 	# Editor export ignores override.cfg: set the temporary project configuration.
 	ProjectSettings.set_setting("admob/general/android/enabled",ads_enabled)
 	ProjectSettings.set_setting("admob/general/android/app_id","ca-app-pub-3940256099942544~3347511713")
-	if ProjectSettings.save()!=OK: push_error("Could not save temporary export configuration."); quit(1); return
+	if ProjectSettings.save()!=OK: push_error("Could not save temporary export configuration."); return 1
 	var overrides=ConfigFile.new()
 	overrides.set_value("admob","general/android/enabled",ads_enabled)
 	overrides.set_value("admob","general/android/app_id","ca-app-pub-3940256099942544~3347511713")
 	overrides.set_value("admob","general/ios/enabled",false)
 	overrides.save("res://override.cfg")
 	print("Android export configured: API 36, signed=",signed," test_ads=",ads_enabled)
-	quit(0)
+	return 0

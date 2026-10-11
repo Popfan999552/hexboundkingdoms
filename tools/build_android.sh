@@ -23,7 +23,7 @@ export_preset_backup=$(mktemp)
 cp export_presets.cfg "$export_preset_backup"
 if [[ -e override.cfg ]]; then echo 'Existing override.cfg found; preserve it and use a clean checkout for release.' >&2; rm "$export_preset_backup" "$project_backup"; exit 1; fi
 trap 'cp "$export_preset_backup" export_presets.cfg; cp "$project_backup" project.godot; rm -f "$export_preset_backup" "$project_backup" override.cfg' EXIT
-./tools/godot.sh --headless --editor --path . --script tools/configure_export.gd 2>&1 | tee build/logs/configure.log
+./tools/godot.sh --headless --editor --path . -- --configure-export 2>&1 | tee build/logs/configure.log
 python3 - <<'PY' 2>&1 | tee build/logs/template-install.log
 import os,pathlib,zipfile
 base=pathlib.Path(os.environ['XDG_DATA_HOME'])/'godot/export_templates/4.6.3.stable/android_source.zip'
