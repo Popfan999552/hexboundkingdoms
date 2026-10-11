@@ -17,3 +17,7 @@ for p in root.rglob('AndroidManifest.xml'):
   detail={'permissions':[e.attrib for e in m.findall('permission')],'services':[e.attrib for e in app.findall('service')],'providers':[e.attrib for e in app.findall('provider')]}
   print('::notice title=SDK manifest components::'+json.dumps(detail)[:6000])
  except Exception as exc: print('Manifest inspection failed:',type(exc).__name__)
+for p in root.rglob('logcat.txt'):
+ lines=p.read_text(errors='replace').splitlines()
+ relevant=[s for s in lines if 'godot' in s.lower() or 'AndroidRuntime' in s or 'FATAL' in s or 'Fatal signal' in s]
+ print('::notice title=Android runtime log::'+'\n'.join(relevant[-60:]).replace('%','%25').replace('\n','%0A')[:10000])
