@@ -24,7 +24,7 @@ cp export_presets.cfg "$export_preset_backup"
 if [[ -e override.cfg ]]; then echo 'Existing override.cfg found; preserve it and use a clean checkout for release.' >&2; rm "$export_preset_backup" "$project_backup"; exit 1; fi
 trap 'cp "$export_preset_backup" export_presets.cfg; cp "$project_backup" project.godot; rm -f "$export_preset_backup" "$project_backup" override.cfg' EXIT
 ./tools/godot.sh --headless --editor --path . --script tools/configure_export.gd 2>&1 | tee build/logs/configure.log
-python3 - <<'PY'
+python3 - <<'PY' 2>&1 | tee build/logs/template-install.log
 import os,pathlib,zipfile
 base=pathlib.Path(os.environ['XDG_DATA_HOME'])/'godot/export_templates/4.6.3.stable/android_source.zip'
 if not base.is_file(): raise SystemExit('Godot Android source template missing: run tools/install_godot.py')
@@ -43,7 +43,7 @@ if os.environ.get('HEXBOUND_TEST_ADS')=='1':
     import xml.etree.ElementTree as ET
     android='http://schemas.android.com/apk/res/android'; tools='http://schemas.android.com/tools'
     ET.register_namespace('android',android); ET.register_namespace('tools',tools)
-    manifest=target/'AndroidManifest.xml'; tree=ET.parse(manifest)
+    manifest=target/'src/main/AndroidManifest.xml'; tree=ET.parse(manifest)
     ET.SubElement(tree.getroot(),'uses-permission',{'{'+android+'}name':'android.permission.READ_BASIC_PHONE_STATE','{'+tools+'}node':'remove'})
     tree.write(manifest,encoding='utf-8',xml_declaration=True)
 PY
