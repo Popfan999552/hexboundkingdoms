@@ -10,9 +10,16 @@ var centers: Array[Vector2] = []
 var radius = 43.0
 var pulse = 0.0
 var festival_glow = false
+var zoom = 1.0
+var pan = Vector2.ZERO
+var pointer_down = false
+var press_position = Vector2.ZERO
+var touches: Dictionary = {}
+var pinch_distance = 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	clip_contents=true
 	gui_input.connect(_input_board)
 	resized.connect(queue_redraw)
 
@@ -20,13 +27,40 @@ func _process(delta: float) -> void:
 	pulse += delta
 	if selected >= 0: queue_redraw()
 
+func set_zoom(value: float) -> void:
+	zoom=clampf(value,1.0,2.6)
+	if zoom==1.0: pan=Vector2.ZERO
+	queue_redraw()
+
 func _input_board(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		for i in range(centers.size()):
-			if centers[i].distance_to(event.position) < radius*0.89:
-				territory_selected.emit(i)
-				accept_event()
-				return
+	if event is InputEventScreenTouch:
+		if event.pressed: touches[event.index]=event.position
+		else: touches.erase(event.index)
+		if touches.size()==2:
+			var points=touches.values(); pinch_distance=points[0].distance_to(points[1]); pointer_down=false
+		elif touches.size()<2: pinch_distance=0.0
+	if event is InputEventScreenDrag:
+		touches[event.index]=event.position
+		if touches.size()==2:
+			var points=touches.values(); var current=points[0].distance_to(points[1])
+			if pinch_distance>0: set_zoom(zoom*current/pinch_distance)
+			pinch_distance=current; accept_event(); return
+	if event is InputEventMouseMotion and pointer_down and zoom>1.0:
+		pan+=event.relative
+		pan=pan.clamp(-size*0.75,size*0.75); queue_redraw()
+	if event is InputEventMouseButton:
+		if event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP,MOUSE_BUTTON_WHEEL_DOWN]:
+			set_zoom(zoom+(0.2 if event.button_index==MOUSE_BUTTON_WHEEL_UP else -0.2)); accept_event(); return
+		if event.button_index==MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				pointer_down=touches.size()<2; press_position=event.position
+			else:
+				var tap=pointer_down and press_position.distance_to(event.position)<12
+				pointer_down=false
+				if tap:
+					for i in range(centers.size()):
+						if centers[i].distance_to(event.position)<radius*0.89:
+							territory_selected.emit(i); accept_event(); return
 
 func hexagon(center: Vector2,scale_value: float = 1.0) -> PackedVector2Array:
 	var polygon = PackedVector2Array()
@@ -35,8 +69,8 @@ func hexagon(center: Vector2,scale_value: float = 1.0) -> PackedVector2Array:
 
 func _draw() -> void:
 	if game == null or game.tiles.is_empty(): return
-	radius = minf(size.x / 13.0,size.y / 12.0)
-	var origin = size/2 + Vector2(0,8)
+	radius = minf(size.x / 13.0,size.y / 12.0)*zoom
+	var origin = size/2 + Vector2(0,8) + pan
 	centers.clear()
 	var font = ThemeDB.fallback_font
 	for tile in game.tiles:

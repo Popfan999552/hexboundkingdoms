@@ -13,9 +13,9 @@ Automated evidence is in `validation.md`; do not mark unrun items as passed.
 - [x] Layout assertions at 1280×720, 1920×1080, 2400×1080 and 800×1280.
 - [x] Actual desktop OpenGL/Mesa gameplay screenshots; desktop export startup.
 - [x] No-native-ad fail-closed desktop behavior.
-- [ ] Android AAB generation and bundletool validation.
+- [x] Android AAB generation and bundletool validation in GitHub Actions (updated touch build pending).
 - [ ] Release signature verification on actual signed AAB.
-- [ ] Merged manifest/permission/native dependency audit.
+- [x] Offline merged manifest/permission audit in Actions; native-ad dependency audit pending.
 - [ ] Real phones: API 26 baseline, API 36 current, narrow/ultrawide/tablet, cutouts/system bars, orientation changes and 16-KiB device.
 - [ ] Touch accuracy/readability, screen-reader/accessibility/contrast and device performance/battery/heat.
 - [ ] Suspend, force stop, restart, storage full, upgrade save compatibility, uninstall deletion, backup behavior.

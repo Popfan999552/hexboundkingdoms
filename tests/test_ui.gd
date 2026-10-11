@@ -24,6 +24,7 @@ func run() -> void:
 	# Exercise board hit testing, not just a direct game-model call.
 	var click=InputEventMouseButton.new(); click.button_index=MOUSE_BUTTON_LEFT; click.pressed=true; click.position=app.board.centers[h]
 	app.board._input_board(click)
+	click.pressed=false; app.board._input_board(click)
 	check(app.selected==h and app.tutorial_step==2,"mouse/touch emulation selects home")
 	app.action_buttons[3].pressed.emit(); app.select_tile(h)
 	check(app.game.tiles[h].beacon and app.tutorial_step==3,"Beacon button constructs and progresses lesson")
@@ -54,6 +55,19 @@ func run() -> void:
 		for center in app.board.centers:
 			if center.x-app.board.radius<0 or center.x+app.board.radius>app.board.size.x or center.y-app.board.radius<0 or center.y+app.board.radius>app.board.size.y: fits=false
 		check(fits,"all tiles fit board at %s" % dimensions)
+		check(app.get_global_rect().encloses(app.board.get_global_rect()),"board stays inside screen at %s" % dimensions)
+	app.board.set_zoom(1.7); await process_frame
+	check(is_equal_approx(app.board.zoom,1.7),"map zoom works")
+	app.board.pan=Vector2(40,20); app.board.set_zoom(1.0)
+	check(app.board.pan==Vector2.ZERO,"fit map recenters")
+	var touch_a=InputEventScreenTouch.new(); touch_a.index=0; touch_a.pressed=true; touch_a.position=Vector2(100,100)
+	var touch_b=InputEventScreenTouch.new(); touch_b.index=1; touch_b.pressed=true; touch_b.position=Vector2(200,100)
+	app.board._input_board(touch_a); app.board._input_board(touch_b)
+	var drag=InputEventScreenDrag.new(); drag.index=1; drag.position=Vector2(250,100)
+	app.board._input_board(drag)
+	check(app.board.zoom>1.0 and not app.board.pointer_down,"two-finger pinch zooms without building")
+	touch_a.pressed=false; touch_b.pressed=false; app.board._input_board(touch_a); app.board._input_board(touch_b)
+	app.board.set_zoom(1.0)
 	app.show_settings(); check(is_instance_valid(app.overlay),"settings opens")
 	app.show_rules(); check(is_instance_valid(app.overlay),"rules opens")
 	var Ads=load("res://scripts/ads.gd"); var ads=Ads.new(); root.add_child(ads)

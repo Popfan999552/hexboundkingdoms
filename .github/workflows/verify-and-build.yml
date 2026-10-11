@@ -16,7 +16,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: hexbound-${{ github.workflow }}-${{ github.ref }}
+  group: hexbound-${{ github.workflow }}-${{ github.ref }}-${{ inputs.test_ads && 'ads' || 'offline' }}
   cancel-in-progress: true
 jobs:
   validate:

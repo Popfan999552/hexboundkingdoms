@@ -4,6 +4,6 @@
 - Roads, settlements, cities, resource trade and storm blocking.
 - Original seasonal supply and beacon-diversity prestige rules.
 - Learn-by-playing tutorial, local automatic saves and resume.
-- Sound effects, reduced-motion settings and adaptive layouts.
+- Sound effects, reduced-motion settings, adaptive layouts and pinch/pan map controls.
 
 Android/device validation and native advertising QA are pending. This is not yet a public Google Play release. Purchases and online multiplayer are not included.

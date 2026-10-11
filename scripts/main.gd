@@ -109,6 +109,14 @@ func build_layout() -> void:
 	root_box = BoxContainer.new(); root_box.add_theme_constant_override("separation",16); margin.add_child(root_box)
 	field = VBoxContainer.new(); field.size_flags_vertical=Control.SIZE_EXPAND_FILL; field.size_flags_horizontal=Control.SIZE_EXPAND_FILL; root_box.add_child(field)
 	var heading = label("HEXBOUND  /  KINGDOMS",26); heading.add_theme_color_override("font_color",Color("69dfcc")); field.add_child(heading)
+	var navigation=HBoxContainer.new(); field.add_child(navigation)
+	button("−",func(): board.set_zoom(board.zoom-0.25),navigation)
+	button("Fit map",func(): board.set_zoom(1.0),navigation)
+	button("+",func(): board.set_zoom(board.zoom+0.25),navigation)
+	var map_hint=label("Pinch to zoom · drag when zoomed",14)
+	map_hint.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	map_hint.custom_minimum_size.x=160
+	navigation.add_child(map_hint)
 	status = label("A realm of seasons, storms and signal fires",18); field.add_child(status)
 	board = Board.new(); board.custom_minimum_size=Vector2(0,240); board.size_flags_vertical=Control.SIZE_EXPAND_FILL
 	board.game=game; board.territory_selected.connect(select_tile); field.add_child(board)
@@ -152,7 +160,7 @@ func label(text: String,font_size: int=18) -> Label:
 	return l
 
 func button(text: String,callback: Callable,parent: Node) -> Button:
-	var b=Button.new(); b.text=text; b.custom_minimum_size.y=48; b.pressed.connect(callback); parent.add_child(b)
+	var b=Button.new(); b.text=text; b.custom_minimum_size.y=88 if OS.get_name()=="Android" else 48; b.pressed.connect(callback); parent.add_child(b)
 	return b
 
 func resource_choice(parent: Node) -> OptionButton:
@@ -194,6 +202,7 @@ func show_menu() -> void:
 func start_game(learn: bool) -> void:
 	epoch+=1
 	close_overlay(); game.new_game(count_choice,difficulty_choice,104729 if learn or "--capture" in OS.get_cmdline_user_args() else 0)
+	board.set_zoom(1.0)
 	tutorial=learn; tutorial_step=0; selected=-1; road_start=-1; mode="inspect"; busy=false
 	populate_partners(); refresh(); game.save_game()
 

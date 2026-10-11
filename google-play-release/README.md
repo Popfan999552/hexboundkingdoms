@@ -1,6 +1,6 @@
 # Release package — development build 0.1.0
 
-**Not ready for Google Play submission.** Gameplay and desktop validation are available; Android export is blocked locally by unaccepted SDK licenses. No AAB has been generated in this cloud instance. Native ads, signing, merged Android manifest, install/resume behavior, real touchscreen ergonomics, and physical-device performance have not been validated. This README must be updated after a successful CI/device run; a configured workflow is not evidence of a successful workflow run.
+**Not ready for Google Play submission.** Gameplay and desktop validation are available; Android export is blocked locally by unaccepted SDK licenses; GitHub’s preprovisioned SDK successfully built the unsigned bundle without accepting new terms. An unsigned AAB has been generated and validated in GitHub Actions run 38181967539 (artifact android-bundle-5, before the latest touch-control update); a rebuild of the updated game is pending. No AAB was generated locally in this cloud instance. Native ads, signing, Android install/resume behavior, real touchscreen ergonomics, and physical-device performance have not been validated. The offline bundle passed bundletool, merged manifest and native alignment audits in Actions. This README must be updated after a successful CI/device run; a configured workflow is not evidence of a successful workflow run.
 
 Prepared files:
 - `app-icon-512.png`: original 512 × 512 opaque Play icon.

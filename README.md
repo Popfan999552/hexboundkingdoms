@@ -4,7 +4,7 @@ Original offline hex-territory strategy game, Godot **4.6.3**, GDScript, Android
 
 ## Play
 
-Open `project.godot` in Godot 4.6.3 and run. Choose 2–4 kingdoms (one human with 1–3 offline AI), difficulty, or interactive tutorial. Roll, resolve a storm on seven, spend two actions, then end the turn. Click/tap territories to inspect or build. Road construction requires two adjacent selections. Green outlines identify legal city/settlement/beacon targets. Save automatically after actions and AI turns; resume from main menu. Settings persist locally. No accounts or multiplayer networking.
+Open `project.godot` in Godot 4.6.3 and run. Choose 2–4 kingdoms (one human with 1–3 offline AI), difficulty, or interactive tutorial. Roll, resolve a storm on seven, spend two actions, then end the turn. Click/tap territories to inspect or build. Pinch/wheel or use +/- to zoom; drag while zoomed; Fit map recenters. Android buttons are enlarged. Road construction requires two adjacent selections. Green outlines identify legal city/settlement/beacon targets. Save automatically after actions and AI turns; resume from main menu. Settings persist locally. No accounts or multiplayer networking.
 
 **Original rules:** Roads join hex centers; settlement sites occupy territories, with an empty neighboring ring. Five rotating seasons increase one biome's production and guarantee supplies. Beacons grant prestige and reward biome diversity. Storms deny production and grant salvaged Ember without theft or discards. Reach 12 prestige. Full charter and costs are accessible in-game. The familiar genre elements (hexes, dice, roads, trade) are not a copied board layout or rulebook. Obtain name/trademark and overall presentation review before commercial publication.
 
