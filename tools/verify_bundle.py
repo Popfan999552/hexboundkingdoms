@@ -4,8 +4,9 @@ import json, pathlib, struct, sys, zipfile
 def check(path):
  with zipfile.ZipFile(path) as z:
   names=z.namelist()
-  for entry in ['BundleConfig.pb','base/manifest/AndroidManifest.xml','base/assets/project.binary']:
+  for entry in ['BundleConfig.pb','base/manifest/AndroidManifest.xml']:
    if entry not in names: raise ValueError('Missing AAB entry: '+entry)
+  if not any(n.endswith('/assets/project.binary') for n in names): raise ValueError('Missing Godot project in base/install-time asset pack')
   libs=[n for n in names if n.startswith('base/lib/') and n.endswith('.so')]
   if not any('/arm64-v8a/' in n for n in libs): raise ValueError('No ARM64 native library')
   for name in libs:
@@ -16,7 +17,7 @@ def check(path):
     if struct.unpack_from('<I',data,offset)[0]==1:
      align=struct.unpack_from('<Q',data,offset+48)[0]
      if align<16384: raise ValueError('Native LOAD segment is not 16-KiB aligned: '+name)
-  report={'bundle':str(path),'structural_check':'passed','native_libraries':libs,'elf_16k_alignment':'passed','manifest_policy_review':'requires bundletool dump and device testing'}
+  report={'bundle':str(path),'structural_check':'passed','native_libraries':libs,'elf_16k_alignment':'passed','manifest_policy_review':'separate manifest audit; device testing outstanding'}
  pathlib.Path('build/bundle-check.json').write_text(json.dumps(report,indent=2))
  print(json.dumps(report,indent=2))
 if __name__=='__main__': check(pathlib.Path(sys.argv[1]))

@@ -42,6 +42,7 @@ if [[ -n "${GODOT_ANDROID_KEYSTORE_RELEASE_PATH:-}" ]]; then output="build/hexbo
 if rg -q '^(SCRIPT ERROR|ERROR):' build/logs/android.log; then echo 'Android export reported errors.' >&2; exit 1; fi
 test -s "$output"
 python3 tools/verify_bundle.py "$output"
+python3 tools/validate_android_manifest.py "$output"
 if [[ -n "${GODOT_ANDROID_KEYSTORE_RELEASE_PATH:-}" ]]; then
  "$JAVA_HOME/bin/jarsigner" -verify "$output" > build/logs/signature.log
  rg -q 'jar verified' build/logs/signature.log || { echo 'Bundle signature verification failed.' >&2; exit 1; }

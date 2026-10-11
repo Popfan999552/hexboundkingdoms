@@ -121,6 +121,8 @@ jobs:
           path: |
             build/*.aab
             build/bundle-check.json
+            build/manifest-audit.json
+            build/AndroidManifest.xml
             build/logs/
             google-play-release/
           if-no-files-found: error
