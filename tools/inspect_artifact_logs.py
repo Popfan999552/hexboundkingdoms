@@ -10,3 +10,10 @@ for p in logs[:8]:
  print(f'::notice title={p.name}::{text[:6000]}')
 for p in root.rglob('manifest-audit.json'):
  print('::notice title=Manifest audit::'+p.read_text().replace('\n','%0A'))
+import xml.etree.ElementTree as ET,json
+for p in root.rglob('AndroidManifest.xml'):
+ try:
+  m=ET.parse(p).getroot(); app=m.find('application')
+  detail={'permissions':[e.attrib for e in m.findall('permission')],'services':[e.attrib for e in app.findall('service')],'providers':[e.attrib for e in app.findall('provider')]}
+  print('::notice title=SDK manifest components::'+json.dumps(detail)[:6000])
+ except Exception as exc: print('Manifest inspection failed:',type(exc).__name__)
