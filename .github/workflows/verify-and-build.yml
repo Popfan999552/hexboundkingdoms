@@ -131,3 +131,45 @@ jobs:
         if: success()
         run: |
           echo 'AAB artifact generated. Unsigned artifacts cannot be submitted; signed builds still require device QA and policy review. No upload or publication occurred.' >> "$GITHUB_STEP_SUMMARY"
+
+  android-emulator:
+    needs: android
+    if: github.event_name == 'workflow_dispatch' && !inputs.sign_release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      XDG_DATA_HOME: /tmp/hexbound/data
+      XDG_CONFIG_HOME: /tmp/hexbound/config
+      XDG_CACHE_HOME: /tmp/hexbound/cache
+      ANDROID_USER_HOME: /tmp/hexbound/android-user
+      GRADLE_USER_HOME: /tmp/hexbound/gradle
+      HEXBOUND_TEST_ADS: ${{ inputs.test_ads && '1' || '0' }}
+      HEXBOUND_ANDROID_QA: '1'
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-java@v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install pinned Godot/templates for QA-only build
+        run: |
+          python3 tools/install_godot.py --engine --cache "$RUNNER_TEMP/hexbound-downloads"
+          echo "$RUNNER_TEMP/hexbound-downloads/bin" >> "$GITHUB_PATH"
+      - name: Build QA-only bundle with automated play entry
+        run: tools/build_android.sh
+      - name: Install and exercise actual Android gameplay on emulator
+        run: tools/android_emulator_qa.sh
+      - name: Report concrete emulator failures
+        if: failure()
+        run: |
+          python3 tools/report_ci_failure.py
+          if test -f build/emulator-qa/emulator.log; then tail -10 build/emulator-qa/emulator.log; fi
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: android-emulator-qa-${{ github.run_number }}
+          path: |
+            build/emulator-qa/
+            build/logs/
+          if-no-files-found: error
+          retention-days: 14

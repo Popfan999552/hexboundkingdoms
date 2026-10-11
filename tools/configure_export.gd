@@ -20,7 +20,12 @@ func configure() -> void:
 	var ads_enabled=OS.get_environment("HEXBOUND_TEST_ADS")=="1"
 	cfg.set_value("preset.0.options","permissions/internet",ads_enabled)
 	cfg.set_value("preset.0.options","permissions/access_network_state",ads_enabled)
+	if OS.get_environment("HEXBOUND_ANDROID_QA")=="1": cfg.set_value("preset.0.options","command_line/extra_args","-- --qa-play")
 	cfg.save("res://export_presets.cfg")
+	# Editor export ignores override.cfg: set the temporary project configuration.
+	ProjectSettings.set_setting("admob/general/android/enabled",ads_enabled)
+	ProjectSettings.set_setting("admob/general/android/app_id","ca-app-pub-3940256099942544~3347511713")
+	if ProjectSettings.save()!=OK: push_error("Could not save temporary export configuration."); quit(1); return
 	var overrides=ConfigFile.new()
 	overrides.set_value("admob","general/android/enabled",ads_enabled)
 	overrides.set_value("admob","general/android/app_id","ca-app-pub-3940256099942544~3347511713")

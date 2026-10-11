@@ -56,6 +56,13 @@ func _ready() -> void:
 			if is_instance_valid(reward_button): reward_button.disabled=not ads.can_reward(game.winner>=0))
 	board.festival_glow=preferences.get_value("settings","festival_glow",false)
 	show_menu()
+	if "--qa-play" in OS.get_cmdline_user_args():
+		start_game(false)
+		roll_button.pressed.emit()
+		if game.phase=="block": select_tile(0)
+		await get_tree().process_frame
+		assert(game.tiles.size()==37 and game.phase=="act")
+		print("ANDROID_QA_GAMEPLAY_READY: territories=37 phase=act active=0 native_ads=",ads!=null)
 	if "--smoke" in OS.get_cmdline_user_args():
 		start_game(true)
 		await get_tree().process_frame

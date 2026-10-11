@@ -6,7 +6,7 @@ secret_values=[v for k,v in os.environ.items() if ('PASSWORD' in k or k.endswith
 for path in sorted(Path('build/logs').glob('*.log')):
     lines=path.read_text(errors='replace').splitlines()
     errors=[s for s in lines if re.search(r'^(SCRIPT ERROR|ERROR):|Missing SDK|FAIL:|Exception|not found|Unable to',s)]
-    for line in errors[-5:]:
+    for line in (errors[-5:] if errors else lines[-3:]):
         for secret in secret_values: line=line.replace(secret,'[REDACTED]')
         line=line.replace('%','%25').replace('\r','%0D').replace('\n','%0A')
         print(f'::error title={path.name}::{line[:1800]}')

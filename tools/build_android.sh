@@ -17,10 +17,12 @@ if [[ "${HEXBOUND_TEST_ADS:-0}" == 1 ]]; then python3 tools/install_native_ads.p
 ./tools/check.sh
 # CI calls this on a fresh disposable checkout. Restore the tracked preset and remove
 # only our local override on exit; never store signing secrets in either file.
+project_backup=$(mktemp)
+cp project.godot "$project_backup"
 export_preset_backup=$(mktemp)
 cp export_presets.cfg "$export_preset_backup"
-if [[ -e override.cfg ]]; then echo 'Existing override.cfg found; preserve it and use a clean checkout for release.' >&2; rm "$export_preset_backup"; exit 1; fi
-trap 'cp "$export_preset_backup" export_presets.cfg; rm -f "$export_preset_backup" override.cfg' EXIT
+if [[ -e override.cfg ]]; then echo 'Existing override.cfg found; preserve it and use a clean checkout for release.' >&2; rm "$export_preset_backup" "$project_backup"; exit 1; fi
+trap 'cp "$export_preset_backup" export_presets.cfg; cp "$project_backup" project.godot; rm -f "$export_preset_backup" "$project_backup" override.cfg' EXIT
 ./tools/godot.sh --headless --editor --path . --script tools/configure_export.gd 2>&1 | tee build/logs/configure.log
 python3 - <<'PY'
 import os,pathlib,zipfile
@@ -41,8 +43,8 @@ if [[ -n "${GODOT_ANDROID_KEYSTORE_RELEASE_PATH:-}" ]]; then output="build/hexbo
 ./tools/godot.sh --headless --path . --export-release Android "$output" 2>&1 | tee build/logs/android.log
 if rg -q '^(SCRIPT ERROR|ERROR):' build/logs/android.log; then echo 'Android export reported errors.' >&2; exit 1; fi
 test -s "$output"
-python3 tools/verify_bundle.py "$output"
-python3 tools/validate_android_manifest.py "$output"
+python3 tools/verify_bundle.py "$output" 2>&1 | tee build/logs/bundle-validation.log
+python3 tools/validate_android_manifest.py "$output" 2>&1 | tee build/logs/manifest-validation.log
 if [[ -n "${GODOT_ANDROID_KEYSTORE_RELEASE_PATH:-}" ]]; then
  "$JAVA_HOME/bin/jarsigner" -verify "$output" > build/logs/signature.log
  rg -q 'jar verified' build/logs/signature.log || { echo 'Bundle signature verification failed.' >&2; exit 1; }
