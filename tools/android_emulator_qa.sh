@@ -13,7 +13,7 @@ mkdir -p "$ANDROID_AVD_HOME"
 printf 'no\n' | "$avd_manager" create avd -n HexboundQA -k 'system-images;android-35;default;x86_64' --device pixel --force
 if [[ ! -e /dev/kvm ]]; then echo 'Runner does not expose KVM; native emulator testing is unavailable.' >&2; exit 1; fi
 sudo chmod a+rw /dev/kvm
-"$ANDROID_HOME/emulator/emulator" -avd HexboundQA -no-window -noaudio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -memory 2048 -accel on > build/emulator-qa/emulator.log 2>&1 &
+"$ANDROID_HOME/emulator/emulator" -avd HexboundQA -no-window -noaudio -no-boot-anim -no-snapshot -gpu swangle -memory 2048 -accel on > build/emulator-qa/emulator.log 2>&1 &
 emulator_pid=$!
 trap 'kill "$emulator_pid" 2>/dev/null || true; rm -f "$RUNNER_TEMP/qa-debug.jks"' EXIT
 adb="$ANDROID_HOME/platform-tools/adb"
@@ -41,10 +41,20 @@ for attempt in {1..60}; do
 done
 [[ "$ready" == true ]] || { echo 'Android gameplay did not report a successful roll and mounted board.' >&2; exit 1; }
 if [[ "${HEXBOUND_TEST_ADS:-0}" == 1 ]]; then rg -q 'native_ads=true' build/emulator-qa/logcat.txt || { echo 'Native ad plugin failed to register at runtime.' >&2; exit 1; }; fi
-app_pid=$("$adb" shell pidof com.hexboundkingdoms.game | tr -d '\r')
+app_pid=$(python3 - <<'PY_PID'
+from pathlib import Path
+import re
+lines=Path('build/emulator-qa/logcat.txt').read_text(errors='replace').splitlines()
+for line in reversed(lines):
+ if 'ANDROID_QA_GAMEPLAY_READY' in line:
+  match=re.match(r'\S+\s+\S+\s+(\d+)\s+\d+\s+',line)
+  if match: print(match.group(1)); break
+PY_PID
+)
 test -n "$app_pid"
+"$adb" shell ps -p "$app_pid" > build/emulator-qa/process.txt
 "$adb" logcat -d --pid "$app_pid" > build/emulator-qa/app-logcat.txt
-if rg -q 'SCRIPT ERROR|FATAL EXCEPTION|Fatal signal' build/emulator-qa/app-logcat.txt; then echo 'Android app reported a runtime failure.' >&2; exit 1; fi
+if rg -q 'godot.*ERROR:|SCRIPT ERROR|FATAL EXCEPTION|Fatal signal' build/emulator-qa/app-logcat.txt; then echo 'Android app reported a runtime failure.' >&2; exit 1; fi
 sleep 2
 "$adb" exec-out screencap -p > build/emulator-qa/android-gameplay.png
 "$adb" shell dumpsys activity activities > build/emulator-qa/activity.txt
