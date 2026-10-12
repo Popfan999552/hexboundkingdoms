@@ -22,3 +22,11 @@ for p in root.rglob('*logcat.txt'):
  lines=p.read_text(errors='replace').splitlines()
  relevant=[s for s in lines if re.search(r'\s[VDIWEF]\s+godot\s*:|SCRIPT ERROR|FATAL EXCEPTION|Fatal signal',s,re.I)]
  print('::notice title=Android runtime log::'+'\n'.join(relevant[-45:]).replace('%','%25').replace('\n','%0A')[:10000])
+files=[p for p in root.rglob('*') if p.is_file() and 'emulator-qa' in str(p)]
+print('::notice title=Emulator output files::'+str([(p.name,p.stat().st_size) for p in files]))
+for p in files:
+ if p.name in ['process.txt','result.json']:
+  print('::notice title='+p.name+'::'+p.read_text(errors='replace').replace('\n','%0A')[:4000])
+ if p.name=='android-gameplay.png':
+  import struct
+  print('::notice title=Android screenshot dimensions::'+str(struct.unpack('>II',p.read_bytes()[16:24])))
