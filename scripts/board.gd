@@ -98,8 +98,9 @@ func _draw() -> void:
 				draw_circle(c+Vector2(radius*0.27,-radius*0.2),radius*0.09,Color("ffefb0"))
 				draw_arc(c+Vector2(radius*0.27,-radius*0.2),radius*0.15,0,TAU,24,Color("ffefb0"),1,true)
 		var label = str(tile.number)
-		draw_circle(c+Vector2(0,radius*0.37),radius*0.2,Color("142337"))
-		draw_string(font,c+Vector2(-font.get_string_size(label,HORIZONTAL_ALIGNMENT_LEFT,-1,16).x/2,radius*0.37+5),label,HORIZONTAL_ALIGNMENT_LEFT,-1,16,Color("f7e6bd") if tile.number in [6,8] else Color("e4edf2"))
+		var number_font = roundi((20 if OS.get_name()=="Android" else 16)*minf(zoom,1.75))
+		draw_circle(c+Vector2(0,radius*0.37),radius*0.31,Color("142337"))
+		draw_string(font,c+Vector2(-font.get_string_size(label,HORIZONTAL_ALIGNMENT_LEFT,-1,number_font).x/2,radius*0.37+number_font*0.34),label,HORIZONTAL_ALIGNMENT_LEFT,-1,number_font,Color("f7e6bd") if tile.number in [6,8] else Color("e4edf2"))
 		if i == game.blocked:
 			draw_circle(c,radius*0.48,Color(0.07,0.1,0.18,0.87))
 			draw_string(font,c+Vector2(-radius*0.35,5),"STORM",HORIZONTAL_ALIGNMENT_LEFT,-1,12,Color("b3b3da"))

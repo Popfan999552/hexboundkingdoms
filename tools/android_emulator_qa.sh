@@ -41,6 +41,7 @@ bundletool="$XDG_CACHE_HOME/bundletool-all-1.18.3.jar"
 "$JAVA_HOME/bin/java" -jar "$bundletool" install-apks --apks=build/emulator-qa/test.apks --adb="$adb"
 fi
 "$adb" shell wm size 1920x1080
+"$adb" shell settings put secure immersive_mode_confirmations confirmed
 "$adb" logcat -c
 "$adb" shell monkey -p com.hexboundkingdoms.game -c android.intent.category.LAUNCHER 1
 ready=false
@@ -65,6 +66,18 @@ test -n "$app_pid"
 "$adb" shell ps -p "$app_pid" > build/emulator-qa/process.txt
 "$adb" logcat -d --pid "$app_pid" > build/emulator-qa/app-logcat.txt
 if python3 tools/log_contains.py 'godot.*ERROR:|SCRIPT ERROR|FATAL EXCEPTION|Fatal signal' build/emulator-qa/app-logcat.txt; then echo 'Android app reported a runtime failure.' >&2; exit 1; fi
+# Dismiss only the OS fullscreen hint if this Android image still shows it.
+"$adb" shell uiautomator dump /sdcard/hexbound-ui.xml >/dev/null
+"$adb" pull /sdcard/hexbound-ui.xml build/emulator-qa/ui.xml >/dev/null
+hint_point=$(python3 - <<'PY_HINT'
+import pathlib,re,xml.etree.ElementTree as ET
+for n in ET.parse('build/emulator-qa/ui.xml').getroot().iter('node'):
+ if n.get('text')=='Got it' and n.get('package')=='com.android.systemui':
+  values=[int(x) for x in re.findall(r'\d+',n.get('bounds',''))]
+  if len(values)==4: print((values[0]+values[2])//2,(values[1]+values[3])//2); break
+PY_HINT
+)
+if [[ -n "$hint_point" ]]; then read -r hint_x hint_y <<< "$hint_point"; "$adb" shell input tap "$hint_x" "$hint_y"; fi
 sleep 2
 "$adb" exec-out screencap -p > build/emulator-qa/android-gameplay.png
 "$adb" shell dumpsys activity activities > build/emulator-qa/activity.txt

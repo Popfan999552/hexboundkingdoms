@@ -75,4 +75,12 @@ func run() -> void:
 	ads.set_enabled(true); check(not ads.enabled and not ads.show_reward(true),"unavailable native ads fail closed")
 	ads.match_to_menu(false); check(ads.completed_matches==0,"active gameplay is not an ad transition")
 	ads.queue_free(); app.queue_free(); await process_frame
+	for dimensions in [Vector2i(1280,800),Vector2i(800,1280)]:
+		var mobile=Main.new(); mobile.touch_layout=true; root.add_child(mobile); mobile.start_game(false)
+		mobile.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT); mobile.size=Vector2(dimensions)
+		await process_frame; await process_frame
+		check(mobile.get_global_rect().encloses(mobile.board.get_global_rect()),"mobile typography fits %s" % dimensions)
+		check(mobile.roll_button.custom_minimum_size.y>=96,"enlarged Android tap target")
+		check(mobile.theme.default_font_size==28,"readable Android UI typography")
+		mobile.queue_free(); await process_frame
 	print("UI_TEST_RESULT: %d checks, %d failures" % [checks,failures]); quit(1 if failures else 0)

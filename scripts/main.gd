@@ -24,6 +24,7 @@ var tutorial_step = 0
 var sound_enabled = true
 var ads_enabled = false
 var reduced_motion = false
+var touch_layout = OS.get_name()=="Android"
 var epoch = 0
 var ads: Node
 var reward_button: Button
@@ -89,7 +90,7 @@ func _ready() -> void:
 
 func build_theme() -> void:
 	var t = Theme.new()
-	t.default_font_size = 18
+	t.default_font_size = 28 if touch_layout else 18
 	var panel_style = StyleBoxFlat.new()
 	panel_style.bg_color = Color("102235")
 	panel_style.border_color = Color("315061")
@@ -144,8 +145,8 @@ func build_layout() -> void:
 	button("Trade resources",toggle_trade,sidebar)
 	trade_panel=VBoxContainer.new(); sidebar.add_child(trade_panel); trade_panel.visible=false
 	give_choice=resource_choice(trade_panel); receive_choice=resource_choice(trade_panel); receive_choice.select(1)
-	partner_choice=OptionButton.new(); trade_panel.add_child(partner_choice)
-	amount_choice=SpinBox.new(); amount_choice.min_value=1; amount_choice.max_value=5; amount_choice.value=2; trade_panel.add_child(amount_choice)
+	partner_choice=OptionButton.new(); partner_choice.custom_minimum_size.y=96 if touch_layout else 44; trade_panel.add_child(partner_choice)
+	amount_choice=SpinBox.new(); amount_choice.custom_minimum_size.y=96 if touch_layout else 48; amount_choice.min_value=1; amount_choice.max_value=5; amount_choice.value=2; trade_panel.add_child(amount_choice)
 	button("Offer trade",execute_trade,trade_panel)
 	end_button=button("End turn",end_turn,sidebar)
 	button("Pause / Save / Settings",show_pause,sidebar)
@@ -163,15 +164,15 @@ func adapt_layout() -> void:
 		overlay.offset_left=size.x*0.15; overlay.offset_right=-size.x*0.15
 
 func label(text: String,font_size: int=18) -> Label:
-	var l=Label.new(); l.text=text; l.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; l.add_theme_font_size_override("font_size",font_size)
+	var l=Label.new(); l.text=text; l.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; l.add_theme_font_size_override("font_size",roundi(font_size*1.55) if touch_layout else font_size)
 	return l
 
 func button(text: String,callback: Callable,parent: Node) -> Button:
-	var b=Button.new(); b.text=text; b.custom_minimum_size.y=88 if OS.get_name()=="Android" else 48; b.pressed.connect(callback); parent.add_child(b)
+	var b=Button.new(); b.text=text; b.custom_minimum_size.y=96 if touch_layout else 48; b.pressed.connect(callback); parent.add_child(b)
 	return b
 
 func resource_choice(parent: Node) -> OptionButton:
-	var choice=OptionButton.new(); choice.custom_minimum_size.y=44
+	var choice=OptionButton.new(); choice.custom_minimum_size.y=96 if touch_layout else 44
 	for resource in Game.RESOURCES: choice.add_item(resource)
 	parent.add_child(choice); return choice
 
@@ -192,10 +193,10 @@ func close_overlay() -> void:
 func show_menu() -> void:
 	var content=panel("HEXBOUND KINGDOMS")
 	content.add_child(label("Light the beacons. Bind the scattered realms.\n\nA strategy game of trade, changing seasons and connected territories.",22))
-	var count=OptionButton.new()
+	var count=OptionButton.new(); count.custom_minimum_size.y=96 if touch_layout else 44
 	for value in [2,3,4]: count.add_item("%d kingdoms · you + %d AI" % [value,value-1])
 	count.select(count_choice-2); count.item_selected.connect(func(i): count_choice=i+2); content.add_child(count)
-	var level=OptionButton.new()
+	var level=OptionButton.new(); level.custom_minimum_size.y=96 if touch_layout else 44
 	for value in ["Wanderer · easy","Steward · normal","Sovereign · hard"]: level.add_item(value)
 	level.select(difficulty_choice); level.item_selected.connect(func(i): difficulty_choice=i); content.add_child(level)
 	button("Begin a new kingdom",func(): start_game(false),content)
@@ -336,9 +337,9 @@ func show_pause() -> void:
 
 func show_settings() -> void:
 	var content=panel("Settings")
-	var audio=CheckButton.new(); audio.text="Sound effects"; audio.button_pressed=sound_enabled; content.add_child(audio)
+	var audio=CheckButton.new(); audio.custom_minimum_size.y=96 if touch_layout else 48; audio.text="Sound effects"; audio.button_pressed=sound_enabled; content.add_child(audio)
 	audio.toggled.connect(func(value): sound_enabled=value; save_settings())
-	var motion=CheckButton.new(); motion.text="Reduce motion"; motion.button_pressed=reduced_motion; content.add_child(motion)
+	var motion=CheckButton.new(); motion.custom_minimum_size.y=96 if touch_layout else 48; motion.text="Reduce motion"; motion.button_pressed=reduced_motion; content.add_child(motion)
 	motion.toggled.connect(func(value): reduced_motion=value; save_settings(); refresh())
 	if ads and ads.supported():
 		var ad_toggle=CheckButton.new(); ad_toggle.text="Enable Google test advertisements"; ad_toggle.button_pressed=ads.enabled; content.add_child(ad_toggle)
