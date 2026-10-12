@@ -1,0 +1,12 @@
+{
+  "android_api": 35,
+  "architecture": "x86_64",
+  "install_launch_and_functional_roll": "passed",
+  "screenshot": [
+    1920,
+    1080
+  ],
+  "runtime_script_errors": 0,
+  "physical_device_and_live_ad_tests": "unrun",
+  "signing": "disposable debug key, not release"
+}
