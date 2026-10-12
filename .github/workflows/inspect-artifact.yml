@@ -10,6 +10,10 @@ on:
         description: Artifact ID in this repository
         required: true
         type: string
+      retry_emulator:
+        description: Retry emulator QA using the artifact's existing QA-only APK set
+        type: boolean
+        default: false
 permissions:
   contents: read
   actions: read
@@ -27,3 +31,43 @@ jobs:
           path: ${{ runner.temp }}/artifact-inspection
       - name: Report build diagnostics without external storage access in cloud
         run: python3 tools/inspect_artifact_logs.py "$RUNNER_TEMP/artifact-inspection"
+
+  retry-emulator:
+    if: inputs.retry_emulator
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      XDG_CACHE_HOME: /tmp/hexbound/cache
+      ANDROID_USER_HOME: /tmp/hexbound/android-user
+      HEXBOUND_TEST_ADS: '1'
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-java@v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.run_id }}
+          artifact-ids: ${{ inputs.artifact_id }}
+          path: ${{ runner.temp }}/artifact-inspection
+      - name: Retry existing QA APK without rebuilding or accepting SDK terms
+        run: |
+          set -euo pipefail
+          export HEXBOUND_REUSE_APKS=$(find "$RUNNER_TEMP/artifact-inspection" -name test.apks -type f -print -quit)
+          test -n "$HEXBOUND_REUSE_APKS"
+          mkdir -p build/logs
+          tools/android_emulator_qa.sh 2>&1 | tee build/logs/emulator-run.log
+      - name: Report exact retry failure
+        if: failure()
+        run: python3 tools/report_ci_failure.py
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: emulator-retry-${{ github.run_number }}
+          path: |
+            build/emulator-qa/
+            build/logs/
+          if-no-files-found: error
+          retention-days: 14

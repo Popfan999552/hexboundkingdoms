@@ -26,11 +26,20 @@ for attempt in {1..90}; do
  sleep 4
 done
 [[ "$booted" == true ]] || { echo 'Emulator did not boot within the timeout.' >&2; exit 1; }
+if [[ -n "${HEXBOUND_REUSE_APKS:-}" ]]; then
+ python3 - <<'PY_APK'
+import os,pathlib,zipfile
+with zipfile.ZipFile(os.environ['HEXBOUND_REUSE_APKS']) as archive:
+ pathlib.Path('build/emulator-qa/reused-universal.apk').write_bytes(archive.read('universal.apk'))
+PY_APK
+ "$adb" install -r build/emulator-qa/reused-universal.apk
+else
 # Disposable, known-password test key only, never a release/upload credential.
 "$JAVA_HOME/bin/keytool" -genkeypair -keystore "$RUNNER_TEMP/qa-debug.jks" -alias androiddebugkey -storepass android -keypass android -dname 'CN=Disposable Test Key' -keyalg RSA -keysize 2048 -validity 2 -noprompt
 bundletool="$XDG_CACHE_HOME/bundletool-all-1.18.3.jar"
 "$JAVA_HOME/bin/java" -jar "$bundletool" build-apks --bundle=build/hexbound-unsigned.aab --output=build/emulator-qa/test.apks --mode=universal --ks="$RUNNER_TEMP/qa-debug.jks" --ks-key-alias=androiddebugkey --ks-pass=pass:android --key-pass=pass:android
 "$JAVA_HOME/bin/java" -jar "$bundletool" install-apks --apks=build/emulator-qa/test.apks --adb="$adb"
+fi
 "$adb" shell wm size 1920x1080
 "$adb" logcat -c
 "$adb" shell monkey -p com.hexboundkingdoms.game -c android.intent.category.LAUNCHER 1
@@ -68,4 +77,4 @@ report={'android_api':35,'architecture':'x86_64','install_launch_and_functional_
 pathlib.Path('build/emulator-qa/result.json').write_text(json.dumps(report,indent=2)); print(json.dumps(report,indent=2))
 PY
 # Do not upload disposable keystores or APK sets signed only for this test.
-rm -f build/emulator-qa/test.apks
+rm -f build/emulator-qa/test.apks build/emulator-qa/reused-universal.apk
