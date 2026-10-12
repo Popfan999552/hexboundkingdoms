@@ -36,6 +36,7 @@ with zipfile.ZipFile(base) as archive:
   if entry.is_dir(): path.mkdir(parents=True,exist_ok=True)
   else: path.parent.mkdir(parents=True,exist_ok=True); path.write_bytes(archive.read(entry))
 (target/'gradlew').chmod(0o755)
+(target/'.gdignore').write_text('')
 pathlib.Path('android/.build_version').write_text('4.6.3.stable')
 if os.environ.get('HEXBOUND_TEST_ADS')=='1':
     # Phone/carrier state is optional to advertising and unnecessary to this game.

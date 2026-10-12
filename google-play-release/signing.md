@@ -1,6 +1,6 @@
 # Signing and repeatable release builds
 
-No real signing key was created, imported, or committed. No Android bundle is locally available yet. The project uses Godot 4.6.3, API 36, minimum API 26, JDK 21, Gradle from the matching Godot source template, and build-tools 36.1.0.
+No release/upload signing key was created, imported, or committed. Emulator QA uses only a disposable, known-password testing key, removed from runner storage and never included in artifacts. No Android bundle is locally available yet. The project uses Godot 4.6.3, API 36, minimum API 26, JDK 21, Gradle from the matching Godot source template, and build-tools 36.1.0.
 
 1. Owner must review/accept required SDK license terms and provision a licensed SDK with API 36, build-tools 36.1.0 and platform-tools. Scripts never run `yes | sdkmanager --licenses`, bypass TLS, or change checksums. GitHub-hosted runner images can have preaccepted/provisioned SDK packages; setup verifies installed components and fails rather than accepting terms.
 2. Owner confirms `com.hexboundkingdoms.game` is the intended unique application ID. It becomes difficult to change after first submission.

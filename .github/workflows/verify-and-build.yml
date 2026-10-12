@@ -43,6 +43,9 @@ jobs:
         run: |
           xvfb-run -a tools/godot.sh --path . --audio-driver Dummy --resolution 1920x1080 -- --capture
           xvfb-run -a tools/godot.sh --path . --audio-driver Dummy --resolution 1920x1080 -- --capture --developed
+      - name: Sanitize diagnostic logs
+        if: always()
+        run: python3 tools/redact_build_logs.py
       - uses: actions/upload-artifact@v7.0.2
         if: always()
         with:
@@ -114,6 +117,9 @@ jobs:
       - name: Remove ephemeral upload key
         if: always()
         run: rm -f "$RUNNER_TEMP/upload-key.jks"
+      - name: Sanitize diagnostic logs
+        if: always()
+        run: python3 tools/redact_build_logs.py
       - uses: actions/upload-artifact@v7.0.2
         if: always()
         with:
@@ -164,6 +170,9 @@ jobs:
         run: |
           python3 tools/report_ci_failure.py
           if test -f build/emulator-qa/emulator.log; then tail -10 build/emulator-qa/emulator.log; fi
+      - name: Sanitize diagnostic logs
+        if: always()
+        run: python3 tools/redact_build_logs.py
       - uses: actions/upload-artifact@v7.0.2
         if: always()
         with:

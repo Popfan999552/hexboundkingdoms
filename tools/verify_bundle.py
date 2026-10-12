@@ -4,6 +4,7 @@ import json, pathlib, struct, sys, zipfile
 def check(path):
  with zipfile.ZipFile(path) as z:
   names=z.namelist()
+  if any(n.endswith(('.jks','.keystore','.p12','export_credentials.cfg')) for n in names): raise ValueError('Signing credential file found in bundle; refusing release')
   for entry in ['BundleConfig.pb','base/manifest/AndroidManifest.xml']:
    if entry not in names: raise ValueError('Missing AAB entry: '+entry)
   if not any(n.endswith('/assets/project.binary') for n in names): raise ValueError('Missing Godot project in base/install-time asset pack')
