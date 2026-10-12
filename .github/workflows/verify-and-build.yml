@@ -158,7 +158,7 @@ jobs:
       - name: Build QA-only bundle with automated play entry
         run: tools/build_android.sh
       - name: Install and exercise actual Android gameplay on emulator
-        run: tools/android_emulator_qa.sh
+        run: tools/android_emulator_qa.sh 2>&1 | tee build/logs/emulator-run.log
       - name: Report concrete emulator failures
         if: failure()
         run: |

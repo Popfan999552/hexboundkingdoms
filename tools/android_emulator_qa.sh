@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+trap 'echo "Emulator QA failed at line $LINENO: $BASH_COMMAND" >&2' ERR
 : "${ANDROID_HOME:?}"
 : "${JAVA_HOME:?}"
 mkdir -p build/emulator-qa

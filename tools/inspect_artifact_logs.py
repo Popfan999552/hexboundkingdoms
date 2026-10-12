@@ -30,3 +30,7 @@ for p in files:
  if p.name=='android-gameplay.png':
   import struct
   print('::notice title=Android screenshot dimensions::'+str(struct.unpack('>II',p.read_bytes()[16:24])))
+for p in root.rglob('logcat.txt'):
+ data=p.read_text(errors='replace'); marks=[line for line in data.splitlines() if 'ANDROID_QA_GAMEPLAY_READY' in line]
+ detail={'ready_marker':bool(marks),'native_true':'native_ads=true' in data,'marker_lines':[s[:500] for s in marks[-3:]],'parsed_pids':[m.group(1) for s in marks if (m:=re.match(r'\S+\s+\S+\s+(\d+)\s+\d+\s+',s))]}
+ print('::notice title=Harness marker checks::'+json.dumps(detail))
