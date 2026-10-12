@@ -46,11 +46,11 @@ fi
 ready=false
 for attempt in {1..60}; do
  "$adb" logcat -d > build/emulator-qa/logcat.txt
- if rg -q 'ANDROID_QA_GAMEPLAY_READY' build/emulator-qa/logcat.txt; then ready=true; break; fi
+ if python3 tools/log_contains.py 'ANDROID_QA_GAMEPLAY_READY' build/emulator-qa/logcat.txt; then ready=true; break; fi
  sleep 2
 done
 [[ "$ready" == true ]] || { echo 'Android gameplay did not report a successful roll and mounted board.' >&2; exit 1; }
-if [[ "${HEXBOUND_TEST_ADS:-0}" == 1 ]]; then rg -q 'native_ads=true' build/emulator-qa/logcat.txt || { echo 'Native ad plugin failed to register at runtime.' >&2; exit 1; }; fi
+if [[ "${HEXBOUND_TEST_ADS:-0}" == 1 ]]; then python3 tools/log_contains.py 'native_ads=true' build/emulator-qa/logcat.txt || { echo 'Native ad plugin failed to register at runtime.' >&2; exit 1; }; fi
 app_pid=$(python3 - <<'PY_PID'
 from pathlib import Path
 import re
@@ -64,7 +64,7 @@ PY_PID
 test -n "$app_pid"
 "$adb" shell ps -p "$app_pid" > build/emulator-qa/process.txt
 "$adb" logcat -d --pid "$app_pid" > build/emulator-qa/app-logcat.txt
-if rg -q 'godot.*ERROR:|SCRIPT ERROR|FATAL EXCEPTION|Fatal signal' build/emulator-qa/app-logcat.txt; then echo 'Android app reported a runtime failure.' >&2; exit 1; fi
+if python3 tools/log_contains.py 'godot.*ERROR:|SCRIPT ERROR|FATAL EXCEPTION|Fatal signal' build/emulator-qa/app-logcat.txt; then echo 'Android app reported a runtime failure.' >&2; exit 1; fi
 sleep 2
 "$adb" exec-out screencap -p > build/emulator-qa/android-gameplay.png
 "$adb" shell dumpsys activity activities > build/emulator-qa/activity.txt

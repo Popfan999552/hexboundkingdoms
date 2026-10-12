@@ -51,13 +51,13 @@ PY
 output="build/hexbound-unsigned.aab"
 if [[ -n "${GODOT_ANDROID_KEYSTORE_RELEASE_PATH:-}" ]]; then output="build/hexbound-signed.aab"; fi
 ./tools/godot.sh --headless --path . --export-release Android "$output" 2>&1 | tee build/logs/android.log
-if rg -q '^(SCRIPT ERROR|ERROR):' build/logs/android.log; then echo 'Android export reported errors.' >&2; exit 1; fi
+if python3 tools/log_contains.py '^(SCRIPT ERROR|ERROR):' build/logs/android.log; then echo 'Android export reported errors.' >&2; exit 1; fi
 test -s "$output"
 python3 tools/verify_bundle.py "$output" 2>&1 | tee build/logs/bundle-validation.log
 python3 tools/validate_android_manifest.py "$output" 2>&1 | tee build/logs/manifest-validation.log
 if [[ -n "${GODOT_ANDROID_KEYSTORE_RELEASE_PATH:-}" ]]; then
  "$JAVA_HOME/bin/jarsigner" -verify "$output" > build/logs/signature.log
- rg -q 'jar verified' build/logs/signature.log || { echo 'Bundle signature verification failed.' >&2; exit 1; }
+ python3 tools/log_contains.py 'jar verified' build/logs/signature.log || { echo 'Bundle signature verification failed.' >&2; exit 1; }
 fi
 cp "$output" google-play-release/
 echo "Built $output. Unsigned builds cannot be uploaded to Play. No publishing performed."
