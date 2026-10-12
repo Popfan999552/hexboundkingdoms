@@ -13,7 +13,7 @@ Prepared deliverables:
 - `third-party-notices.md`, complete notices in `licenses/`.
 - `validation.md`: exact executed results and downloadable artifact links.
 
-[Download the validated offline AAB/release package](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38187464840/artifacts/11719968452). The artifact contains `google-play-release/hexbound-unsigned.aab`, logs and manifest audits. Bundles are deliberately not committed to Git. The optional [native test-ad artifact](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38187464887/artifacts/11719469277) uses Google demo IDs only. Artifacts expire after 14 days. The final clean emulator screenshot is retained here in Git; older artifacts can contain an earlier capture.
+[Download the complete final release package](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38188219362/artifacts/11720586284). The artifact contains `google-play-release.zip`; extract it to obtain `google-play-release/hexbound-unsigned.aab`, the final clean capture, all current store/compliance materials, license notices, manifest audits and bundle provenance. Bundles are deliberately not committed to Git. The optional [native test-ad artifact](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38187464887/artifacts/11719469277) uses Google demo IDs only. Artifacts expire after 14 days. The final clean emulator screenshot is retained here in Git; older artifacts can contain an earlier capture.
 
 Owner actions still required:
 1. Configure/verify the three upload-key Actions secrets documented in `signing.md`, then run a signed build and verify its certificate. No release/upload key was generated or committed by this task.
