@@ -10,6 +10,10 @@ on:
         description: Artifact ID in this repository
         required: true
         type: string
+      import_screenshot:
+        description: Commit the artifact's verified Android gameplay screenshot to main
+        type: boolean
+        default: false
       retry_emulator:
         description: Retry emulator QA using the artifact's existing QA-only APK set
         type: boolean
@@ -71,3 +75,32 @@ jobs:
             build/logs/
           if-no-files-found: error
           retention-days: 14
+
+  import-screenshot:
+    if: inputs.import_screenshot
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: main
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.run_id }}
+          artifact-ids: ${{ inputs.artifact_id }}
+          path: ${{ runner.temp }}/verified-android-qa
+      - name: Import only a passing QA capture
+        run: python3 tools/import_android_screenshot.py "$RUNNER_TEMP/verified-android-qa"
+      - name: Commit original Android gameplay capture
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add google-play-release/screenshots/android-emulator-api35.png google-play-release/screenshots/android-emulator-api35-qa.json
+          if ! git diff --cached --quiet; then
+            git commit -m '[skip ci] Add verified actual Android gameplay screenshot'
+            git push origin HEAD:main
+          fi
