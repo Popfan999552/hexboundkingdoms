@@ -10,6 +10,10 @@ on:
         description: Artifact ID in this repository
         required: true
         type: string
+      package_release:
+        description: Assemble current store materials with the artifact's validated offline AAB
+        type: boolean
+        default: false
       import_screenshot:
         description: Commit the artifact's verified Android gameplay screenshot to main
         type: boolean
@@ -104,3 +108,26 @@ jobs:
             git commit -m '[skip ci] Add verified actual Android gameplay screenshot'
             git push origin HEAD:main
           fi
+
+  package-release:
+    if: inputs.package_release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: main
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.run_id }}
+          artifact-ids: ${{ inputs.artifact_id }}
+          path: ${{ runner.temp }}/validated-offline-artifact
+      - name: Assemble current release materials with verified offline bundle
+        run: python3 tools/package_release.py "$RUNNER_TEMP/validated-offline-artifact"
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: google-play-release-${{ github.run_number }}
+          path: build/google-play-release.zip
+          if-no-files-found: error
+          retention-days: 14
