@@ -1,29 +1,36 @@
-# Executed validation — 2026-10-11
+# Executed validation
 
-Executed in the Codex cloud machine using Godot 4.6.3. Outputs are not claims about physical Android devices or unexecuted GitHub Actions runs.
+Godot **4.6.3**, real Codex cloud commands and real GitHub Actions runs. Current game code: commit `b097811` (later changes only import captures/documentation/diagnostic reporting).
 
 | Check | Actual result |
 |---|---|
-| Godot headless editor import | Passed; error-scanning runner, no script/import errors |
-| Gameplay suite | 77,795 assertions passed, 0 failed |
-| Complete AI simulations | 45/45 matches reached a winner; all difficulties and 2–4 kingdoms |
-| Interactive UI suite | 37 checks passed, 0 failed; tutorial controls, hit testing, trade, saves, AI cancellation, four viewport layouts and zoom/pinch/recenter controls |
-| Running game startup smoke | Passed |
-| Linux x86_64 release export | Generated `build/hexbound-linux.x86_64` and startup smoke passed |
-| Actual rendered screenshots | Captured via Xvfb + OpenGL/Mesa llvmpipe; original 1280×800 and phone-aspect 1920×1080 captures |
-| GitHub workflow syntax | actionlint 1.7.12 passed after correcting invalid runner-context references |
-| Shell/Python tools | `bash -n` and `python3 -m py_compile` passed |
-| Official Godot templates | SHA-256 matched official GitHub release digest |
-| Official template ARM64/x86_64 native ELF alignment | All LOAD segments of engine and libc++ libraries aligned at 16,384 bytes; **template-only**, not final-bundle/device verification |
-| Poing native ads/UMP package | Pinned SHA-256 verified; consent singleton classes confirmed in AAR; no device/runtime ad test |
-| Full JDK | `javac 21.0.12.1` verified after local package extraction |
-| Android SDK installation | Prerequisites skipped because license was not accepted; no terms accepted on user's behalf |
-| Android build command, cloud | Failed prerequisite check: API 36 `android.jar` absent; no AAB generated locally |
-| GitHub Actions run 38181967539, before latest touch update | Validation and Android jobs passed; unsigned AAB generated; bundletool validation, SDK/permissions/backup/debuggable manifest audit and native alignment check passed |
-| Signed bundle / native ad runtime / device tests | Unrun, pending signing credentials/native-device access |
+| Headless project import | Passed with strict log checking |
+| Gameplay suite | **77,795 assertions passed, 0 failed** |
+| Entire AI matches | **45/45** reached a winner across all three difficulties and 2–4 kingdoms |
+| UI/layout suite | **43 checks passed, 0 failures**: real controls, hit testing, tutorial, trades, save/resume, AI cancellation, zoom/pinch/recenter, desktop/portrait layouts and mobile typography/targets |
+| Game startup smoke | Passed |
+| Linux x86_64 release export | Generated and startup smoke passed |
+| Store image metadata | 512×512 RGBA32 icon and 1024×500 RGB24 feature graphic passed checks |
+| GitHub workflows | actionlint 1.7.12 passed; workflows actually executed |
+| Shell/Python tools | bash syntax and Python compilation passed |
+| Signing-log redaction | Synthetic-value test passed; sensitive value removed while normal diagnostics remained |
+| Official engine/templates and native plugin archives | Pinned official SHA-256 checks passed |
+| Offline Android AAB | **Passed**, final mobile UI, bundletool, SDK/package/permission/backup/debuggable manifest audit and 16-KiB ELF alignment |
+| Native AdMob/UMP test AAB | **Passed**, actual native plugin metadata, Google test app ID, networking, signature-protected receiver, allowed WorkManager permissions, **phone-state permission removed**, bundletool and 16-KiB ELF alignment |
+| Android API 35 x86_64 emulator | **Passed**: install, launch, functional dice/turn transition, native plugin registration, no checked app runtime errors, actual landscape gameplay capture |
+| Release signing attempt | **Blocked** at upload-key preparation; no signed release AAB produced |
+| Real devices, actual ad load/show/reward/consent behavior, 16-KiB device runtime, Play pre-launch/closed testing | **Unrun**; do not treat emulator or packaging checks as these tests |
 
-The UI suite initially exposed a bank-selector bug and portrait test setup issue; both were corrected and the suite rerun successfully. Earlier default-home cache failures were corrected with writable XDG directories. No failure has been relabeled as a pass. Advertising/purchase/publication readiness is not claimed.
+Verified Actions runs:
+- [Final offline build, all required jobs passed](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38187464840).
+- [Final native test-ad build and full Android emulator workflow, all three jobs passed](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38187464887).
+- [Release signing attempt, stopped at credential preparation](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38187728448). Required repository Actions secret group: `ANDROID_UPLOAD_KEY_BASE64`, `ANDROID_UPLOAD_KEY_ALIAS`, `ANDROID_UPLOAD_KEY_PASSWORD`. The owner must configure/verify valid values securely; no values were requested in chat or exposed. Direct secret metadata access was denied by the integration, so individual secret availability is not claimed.
 
-Native integration diagnosis: the first test-ad run passed while omitting native libraries because the editor ignored override.cfg; it is not native SDK evidence. The subsequent integrated SDK AAB passed structural/native-alignment checks but correctly failed the permission audit on unexpected SDK permissions. Optional basic-phone-state access is removed for the revised build; the revised native audit passed in Actions run 38183634200, proving native ads/UMP metadata, Google test app ID and absence of optional phone-state permission. Emulator results are pending. No failed native audit is called a pass.
+Downloadable bundles (unsigned; artifact retention 14 days):
+- [Offline release package — android-bundle-22](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38187464840/artifacts/11719968452), file `google-play-release/hexbound-unsigned.aab` (also under `build/` in the artifact).
+- [Native test-ad package — android-bundle-23](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38187464887/artifacts/11719469277).
+- [Actual Android emulator QA evidence — android-emulator-qa-23](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38187464887/artifacts/11719319874).
 
-Developer tool checks: gameplay/UI/smoke now run in isolated test data directories so they cannot overwrite a developer save. Export configuration runs inside the normal editor plugin lifecycle; a missing-SDK probe exited 1 with the expected prerequisite error and no leaked-RID shutdown errors. Final complete native build revalidation of that helper is pending.
+Earlier failures were investigated and resolved: bank selector treated bank as player zero; a wrapped hint displaced the board; editor overrides initially omitted native ad libraries; SDK added optional phone-state permission; a deprecated SwiftShader backend hit shader limits; CI lacked ripgrep; the first screenshot included Android's fullscreen hint. The final workflow uses supported ANGLE software rendering, portable Python log checks and clean OS-hint dismissal. None of those earlier failed checks was counted as a pass.
+
+Tests use separate application-data directories and cannot overwrite a developer's local save. Normal editor-lifecycle configuration replaced a shutdown-error-prone custom loop. Local Android SDK installation remains unavailable because its terms were left unaccepted; GitHub used its existing provisioned SDK without accepting new agreements. This does not block the generated unsigned artifacts.

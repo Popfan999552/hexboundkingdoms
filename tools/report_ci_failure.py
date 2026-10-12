@@ -15,4 +15,4 @@ for path in paths:
         line=line.replace('%','%25').replace('\r','%0D').replace('\n','%0A')
         print(f'::error title={path.name}::{line[:1800]}')
 if not list(Path('build/logs').glob('*.log')):
-    print('::error::Build failed before log creation; check SDK/JDK prerequisite step output.')
+    print('::error::Build failed before log creation; review the earlier setup or credential-preparation step.')

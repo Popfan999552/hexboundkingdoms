@@ -1,6 +1,6 @@
 # Hexbound Kingdoms
 
-Original offline hex-territory strategy game, Godot **4.6.3**, GDScript, Android landscape with portrait/tablet fallback. This repository began empty. This is a playable development release, **not a certified commercial release**. See [release status](google-play-release/README.md).
+Original offline hex-territory strategy game, Godot **4.6.3**, GDScript, Android landscape with portrait/tablet fallback. This repository began empty. This is a complete playable offline development candidate with validated unsigned Android bundles and emulator gameplay, **not a certified commercial release**. See [release status](google-play-release/README.md).
 
 ## Play
 
@@ -38,7 +38,7 @@ GitHub Actions runs gameplay/UI tests, desktop export, gameplay capture, then an
 
 ## Advertising
 
-Vendored Poing Studios Godot AdMob **5.1.0**, MIT; native build **4.6.3** fetched with checksums. Default export excludes native ad libraries and has Internet off. Dispatch CI with `test_ads=true` or set `HEXBOUND_TEST_ADS=1` to include ads/UMP, then enable test ads in Android Settings. Test IDs only. Consent update/form must complete before SDK initialization or ad requests; failures leave ads unavailable. Rewarded ads are voluntary on the results screen and unlock a cosmetic glow, never strategic advantages. Interstitials only between completed matches, every third match. No app-open ads, banners, analytics, or mediation. Purchases/ad-removal **are not implemented or advertised**. See [advertising QA](google-play-release/advertising.md); native behavior is unverified until tested on devices.
+Vendored Poing Studios Godot AdMob **5.1.0**, MIT; native build **4.6.3** fetched with checksums. Default export excludes native ad libraries and has Internet off. Dispatch CI with `test_ads=true` or set `HEXBOUND_TEST_ADS=1` to include ads/UMP, then enable test ads in Android Settings. Test IDs only. Consent update/form must complete before SDK initialization or ad requests; failures leave ads unavailable. Rewarded ads are voluntary on the results screen and unlock a cosmetic glow, never strategic advantages. Interstitials only between completed matches, every third match. No app-open ads, banners, analytics, or mediation. Purchases/ad-removal **are not implemented or advertised**. See [advertising QA](google-play-release/advertising.md); native packaging and emulator plugin registration are verified; actual consent/ad load/show/reward behavior and physical-device QA remain unverified.
 
 ## Assets and rights
 

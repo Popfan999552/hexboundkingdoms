@@ -9,13 +9,14 @@ Automated evidence is in `validation.md`; do not mark unrun items as passed.
 - [x] Turn progression, storm resolution, prestige/diversity and terminal victory.
 - [x] Atomic save/load, corrupt/missing saves and RNG continuation.
 - [x] 45 AI-vs-AI matches across three difficulties and player counts.
-- [x] UI button/tile hit-testing, actual tutorial progression, save/resume and stale AI cancellation.
+- [x] 43 UI/layout checks: button/tile hit-testing, tutorial, saves, AI cancellation, zoom and mobile targets/typography.
 - [x] Layout assertions at 1280×720, 1920×1080, 2400×1080 and 800×1280.
 - [x] Actual desktop OpenGL/Mesa gameplay screenshots; desktop export startup.
 - [x] No-native-ad fail-closed desktop behavior.
-- [x] Android AAB generation and bundletool validation in GitHub Actions (updated touch build pending).
+- [x] Final Android AAB generation and bundletool validation in GitHub Actions.
 - [ ] Release signature verification on actual signed AAB.
 - [x] Offline merged manifest/permission audit in Actions; native-ad dependency audit pending.
+- [x] API 35 x86_64 Android emulator install, actual gameplay roll, native plugin registration and clean screenshot.
 - [ ] Real phones: API 26 baseline, API 36 current, narrow/ultrawide/tablet, cutouts/system bars, orientation changes and 16-KiB device.
 - [ ] Touch accuracy/readability, screen-reader/accessibility/contrast and device performance/battery/heat.
 - [ ] Suspend, force stop, restart, storage full, upgrade save compatibility, uninstall deletion, backup behavior.

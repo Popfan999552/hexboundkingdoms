@@ -1,18 +1,24 @@
-# Release package — development build 0.1.0
+# Google Play release package — 0.1.0 development candidate
 
-**Not ready for Google Play submission.** Gameplay and desktop validation are available; Android export is blocked locally by unaccepted SDK licenses; GitHub’s preprovisioned SDK successfully built the unsigned bundle without accepting new terms. Unsigned offline AABs have been generated and validated in Actions, including the updated touch-control build. Final artifact links and any emulator result are recorded in validation.md. Native ad packaging and its revised permission audit passed in Actions run 38183634200; emulator testing is still in progress. No AAB was generated locally in this cloud instance. Native ads, signing, Android install/resume behavior, real touchscreen ergonomics, and physical-device performance have not been validated. The offline bundle passed bundletool, merged manifest and native alignment audits in Actions. This README must be updated after a successful CI/device run; a configured workflow is not evidence of a successful workflow run.
+**Not ready for Google Play submission.** The complete offline game, tests, Android bundle automation and native test-ad integration are prepared. The final full Android workflow, including API 35 emulator gameplay and clean screenshot capture, passed. Unsigned AABs were successfully generated and validated in GitHub Actions. Release signing stopped at credential preparation. Real-device/ad-consent QA and owner policy/identity requirements remain.
 
-Prepared files:
-- `app-icon-512.png`: original 512 × 512 opaque Play icon.
-- `feature-graphic-1024x500.png`: original store feature artwork.
-- `screenshots/`: actual Godot gameplay captures; desktop viewport renders, **not captures from physical Android phones**. Retake on Android before submission if device-specific presentation differs.
-- `store-listing.md`: accurate offline feature descriptions, contact placeholders.
-- `privacy-policy.md`: offline draft plus separate advertising variant caveats; not a published policy.
-- `compliance.md`: data safety, audience, ads, rating, access and permission worksheets; owner answers required.
-- `signing.md`: secure upload key/Play App Signing preparation.
-- `advertising.md`: test-only consent/ad QA and future purchase requirements.
-- `testing-checklist.md`, `publishing-checklist.md`, `release-notes.md`, `third-party-notices.md`, `official-requirements.md`, `validation.md`.
+Prepared deliverables:
+- `app-icon-512.png`: original opaque 512×512 RGBA32 Play icon.
+- `feature-graphic-1024x500.png`: original RGB24 feature artwork.
+- `screenshots/android-emulator-api35.png`: actual running Android gameplay, API 35 x86_64 emulator, 1920×1080. Its adjacent QA JSON records executed checks. **Not a physical-phone capture.**
+- Other `screenshots/` images: actual desktop Godot gameplay renders.
+- `store-listing.md`, `release-notes.md`: accurate offline features and owner contact placeholders.
+- `privacy-policy.md`, `compliance.md`: drafts/worksheets, **not submitted declarations**.
+- `signing.md`, `advertising.md`, `official-requirements.md`, `testing-checklist.md`, `publishing-checklist.md`.
+- `third-party-notices.md`, complete notices in `licenses/`.
+- `validation.md`: exact executed results and downloadable artifact links.
 
-A successful Android CI run uploads `hexbound-unsigned.aab` or `hexbound-signed.aab` in the `android-bundle-<run number>` artifact and copies it into this folder within that artifact. Bundles are intentionally ignored by Git. An unsigned bundle cannot be submitted. A signed bundle is not by itself a release certification.
+[Download the validated offline AAB/release package](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38187464840/artifacts/11719968452). The artifact contains `google-play-release/hexbound-unsigned.aab`, logs and manifest audits. Bundles are deliberately not committed to Git. The optional [native test-ad artifact](https://github.com/Popfan999552/hexboundkingdoms/actions/runs/38187464887/artifacts/11719469277) uses Google demo IDs only. Artifacts expire after 14 days. The final clean emulator screenshot is retained here in Git; older artifacts can contain an earlier capture.
 
-Required owner actions: accept/provision Android SDK licensing; securely provide an upload key if signing is wanted; confirm package ID and store identity; provide a support contact and host a reviewed privacy policy; decide audience/distribution/monetization and verify SDK disclosures; complete Play Console identity/account/payment/testing requirements; approve publication explicitly. Physical Android QA and final IP/privacy review remain necessary. No purchase or account creation has been performed.
+Owner actions still required:
+1. Configure/verify the three upload-key Actions secrets documented in `signing.md`, then run a signed build and verify its certificate. No release/upload key was generated or committed by this task.
+2. Confirm package ID, publisher/support identity, public reviewed privacy-policy URL, accurate Play Console declarations and any applicable account/closed-testing requirements.
+3. Arrange actual device, accessibility/balance, audio, lifecycle and 16-KiB runtime QA. If releasing with ads, configure owned AdMob/UMP messages, explicitly authorize live IDs and verify real consent/load/show/reward behavior and SDK data processing. No purchases/ad-removal entitlement are implemented or offered.
+4. Review IP/name/presentation and third-party/SDK obligations, and explicitly approve public publication. Nothing was uploaded or published to Google Play; no accounts or purchases were made.
+
+The reusable cloud install/start/configuration draft is saved separately. Review/save/publish it in environment settings to retain the prepared development environment. Draft saving is not publication or proof of restoration in a new task.

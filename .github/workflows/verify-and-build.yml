@@ -101,7 +101,7 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$UPLOAD_KEY_BASE64" && test -n "$UPLOAD_KEY_ALIAS" && test -n "$UPLOAD_KEY_PASSWORD" || {
-            echo 'Missing Android upload-key signing secrets.' >&2
+            echo '::error::Missing signing requirements: configure ANDROID_UPLOAD_KEY_BASE64, ANDROID_UPLOAD_KEY_ALIAS and ANDROID_UPLOAD_KEY_PASSWORD in GitHub repository Actions secrets.'
             exit 1
           }
           umask 077

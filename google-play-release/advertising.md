@@ -8,14 +8,14 @@ Rewarded ads are voluntary and only available on the completed-match screen afte
 
 ## Native tests outstanding
 
-- Build and install ad variant; verify test labels and all native singleton bindings.
+- Native ad variant build/install and runtime plugin registration passed on API 35 emulator. Actual test-ad labels and delivery still need verification.
 - Consent required/not-required/error paths, regional/debug geography, unavailable network, form cancellation, privacy options changing consent, app restart.
 - Real SDK callbacks: successful/failed loads, show/dismiss, reward once, interruption before reward, suspend/resume during ad, disable while load pending, expiry.
 - No mid-game interstitial after pause/menu; interstitial cadence and result-menu callback; no stuck screen or unwanted click targets.
 - Verify merged manifest, SDK startup before consent, traffic and complete data-safety disclosures. Never assume test IDs or an off switch imply zero SDK collection.
 - Verify under-age/child-directed settings match the owner's audience choice before any live build.
 
-These are **unrun**, not passing. Desktop tests validate only fail-closed behavior and placement guards. Live ad IDs require explicit authorization and an owner-created AdMob account/consent setup; none was requested or created.
+These are **unrun**, not passing. Desktop tests validate fail-closed behavior and placement guards; Android emulator QA additionally validates native registration and game startup, without enabling ad requests. Live ad IDs require explicit authorization and an owner-created AdMob account/consent setup; none was requested or created.
 
 ## Future ad removal
 
